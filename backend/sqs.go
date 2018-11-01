@@ -80,25 +80,18 @@ func (sw SQSWorker) DeleteMessages(messages []sqs.Message) {
 }
 
 // Publish, publishes messages to sqs
-func (sw SQSWorker) Publish(message string) {
+func (sw SQSWorker) Publish(message string, mav map[string]*sqs.MessageAttributeValue) {
+
+	var messageAttributes map[string]*sqs.MessageAttributeValue
+	if messageAttributes = mav; mav == nil {
+		messageAttributes = map[string]*sqs.MessageAttributeValue{}
+	}
+
 	result, err := Client.SendMessage(&sqs.SendMessageInput{
-		DelaySeconds: aws.Int64(10),
-		MessageAttributes: map[string]*sqs.MessageAttributeValue{
-			"Title": {
-				DataType:    aws.String("String"),
-				StringValue: aws.String("The Whistler"),
-			},
-			"Author": {
-				DataType:    aws.String("String"),
-				StringValue: aws.String("John Grisham"),
-			},
-			"WeeksOn": {
-				DataType:    aws.String("Number"),
-				StringValue: aws.String("6"),
-			},
-		},
-		MessageBody: aws.String(message),
-		QueueUrl:    aws.String(sw.QueueUrl),
+		DelaySeconds:      aws.Int64(10),
+		MessageAttributes: messageAttributes,
+		MessageBody:       aws.String(message),
+		QueueUrl:          aws.String(sw.QueueUrl),
 	})
 
 	if err != nil {

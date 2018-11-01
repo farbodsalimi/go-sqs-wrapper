@@ -1,5 +1,5 @@
-hash: dff59e15dbfb2d25f407a20bcf297b06209eeaca06e607f2ab948a01d48b07a5
-updated: 2018-10-14T19:46:57.183457-07:00
+hash: cb5b82d0bb0ac2de91c4da552b737c1309be9a61a5ae2c1c1ea1c011c69dec7c
+updated: 2018-11-01T12:59:24.885713-07:00
 imports:
 - name: github.com/aws/aws-sdk-go
   version: bf8067ceb6e7f51e150c218972dccfeeed892b85
@@ -36,4 +36,6 @@ imports:
   version: 9c8236e659b76e87bf02044d06fde8683008ff3e
 - name: github.com/jmespath/go-jmespath
   version: c2b33e8439af944379acbdd9c3a5fe0bc44bd8a5
+- name: github.com/joho/godotenv
+  version: 23d116af351c84513e1946b527c88823e476be13
 testImports: []

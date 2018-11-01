@@ -1,12 +1,18 @@
 package util
 
 import (
+	"log"
 	"os"
+
+	"github.com/joho/godotenv"
 )
 
 // LoadSettings loads settings
 func LoadSettings() {
-	// TODO
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
 }
 
 // GetEnv returns the value of env variables

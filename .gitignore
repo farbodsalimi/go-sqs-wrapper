@@ -17,3 +17,6 @@
 
 # dependencies
 /vendor
+
+# environments
+.env

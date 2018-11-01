@@ -2,29 +2,31 @@ package main
 
 import (
 	"fmt"
+	"os"
 
 	"./backend"
-)
-
-const (
-	QueueUrl    = "https://sqs.us-east-1.amazonaws.com/******/my-queue"
-	Region      = "us-east-1"
-	CredPath    = "/Users/username/.aws/credentials"
-	CredProfile = "default"
+	"./util"
 )
 
 func main() {
+	util.LoadSettings()
+	Region := os.Getenv("AWS_REGION")
+	QueueURL := os.Getenv("SQS_QUEUE_URL")
+	CredPath := os.Getenv("AWS_CRED_PATH")
+	CredProfile := os.Getenv("AWS_CRED_PROFILE")
+
 	sqs := backend.SQSWorker{
 		Region:      Region,
-		QueueUrl:    QueueUrl,
+		QueueUrl:    QueueURL,
 		CredPath:    CredPath,
 		CredProfile: CredProfile,
 	}
+
 	sqs.Init()
-	sqs.Publish("message 1")
-	sqs.Publish("message 2")
-	sqs.Publish("first message 3")
-	sqs.Publish("first message 4")
+	sqs.Publish("message 1", nil)
+	sqs.Publish("message 2", nil)
+	sqs.Publish("first message 3", nil)
+	sqs.Publish("first message 4", nil)
 	messages := sqs.FetchMessages()
 
 	for _, value := range messages {
