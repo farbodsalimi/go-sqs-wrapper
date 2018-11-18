@@ -11,6 +11,7 @@ import (
 
 var Client *sqs.SQS
 
+// SQSWorker structure
 type SQSWorker struct {
 	QueueUrl    string
 	Region      string
@@ -75,7 +76,7 @@ func (sw SQSWorker) DeleteMessages(messages []sqs.Message) {
 			return
 		}
 
-		fmt.Println("Message Deleted", resultDelete)
+		fmt.Println("Successfully deleted the message!", resultDelete)
 	}
 }
 
@@ -99,5 +100,5 @@ func (sw SQSWorker) Publish(message string, mav map[string]*sqs.MessageAttribute
 		return
 	}
 
-	fmt.Println("Success", *result.MessageId)
+	fmt.Println("Successfully published to the queue!", *result.MessageId)
 }
