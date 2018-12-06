@@ -55,7 +55,7 @@ func main() {
 	fw.ProcessMessages(messages)
 }
 
-func handler(msg *sqs.Message) string {
+func handler(msg *sqs.Message) *sqs.Message {
 	fmt.Println(msg)
-	return "Okay"
+	return msg
 }

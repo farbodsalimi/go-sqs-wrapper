@@ -64,7 +64,7 @@ func (sw SQSWorker) FetchMessages() []*sqs.Message {
 }
 
 // DeleteMessages, deletes messages from sqs
-func (sw SQSWorker) DeleteMessages(messages []sqs.Message) {
+func (sw SQSWorker) DeleteMessages(messages []*sqs.Message) {
 	for _, message := range messages {
 		resultDelete, err := Client.DeleteMessage(&sqs.DeleteMessageInput{
 			QueueUrl:      aws.String(sw.QueueUrl),
