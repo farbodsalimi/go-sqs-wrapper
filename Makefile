@@ -6,31 +6,33 @@ GOTEST=$(GOCMD) test
 GOGET=$(GOCMD) get
 BINARY_DIR=./bin
 BINARY_NAME=$(BINARY_DIR)/sqs_wrapper
-BINARY_UNIX=$(BINARY_DIR)/$(BINARY_NAME)_unix
+BINARY_UNIX=$(BINARY_NAME)_unix
 
-all: test build
 
-build: ## Build
+all: test build ## Build and test the binary
+
+build: ## Build the binary
 	$(GOBUILD) -o $(BINARY_NAME) -v
 
 test: ## Test all the test files recursively
 	$(GOTEST) -v ./tests/...
 
-clean: ##
+clean: ## Clean the binaries
 	$(GOCLEAN)
 	rm -f $(BINARY_NAME)
 	rm -f $(BINARY_UNIX)
 
 .PHONY: run
-run: ##
-	$(GOBUILD) -o $(BINARY_NAME) -v ./...
+run: ## Run the binary
+	$(GOBUILD) -o $(BINARY_NAME) -v
 	./$(BINARY_NAME)
 
 .PHONY: build-linux
 build-linux: ## Cross compilation
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 $(GOBUILD) -o $(BINARY_UNIX) -v
 
-docker-build:
+.PHONY: docker-build
+docker-build: ## Build docker image
 	docker run --rm -it -v "$(GOPATH)":/go -w /go/src/bitbucket.org/rsohlich/makepost golang:latest go build -o "$(BINARY_UNIX)" -v
 
 .PHONY: --help
