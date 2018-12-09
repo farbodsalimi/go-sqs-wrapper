@@ -6,9 +6,9 @@ import (
 	"github.com/aws/aws-sdk-go/service/sqs"
 	"os"
 
-	"./backend"
-	"./util"
-	"./workers"
+	"./src/backend"
+	"./src/util"
+	"./src/workers"
 )
 
 func main() {

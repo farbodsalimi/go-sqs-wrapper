@@ -7,7 +7,7 @@ import (
 	"github.com/joho/godotenv"
 )
 
-// LoadSettings loads settings
+// LoadSettings loads settings from the .env file
 func LoadSettings() {
 	err := godotenv.Load()
 	if err != nil {
