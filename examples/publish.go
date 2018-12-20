@@ -1,9 +1,15 @@
-# golang-sqs-wrapper
+package examples
 
-## Examples
+import (
+	"../src/backend"
+	"../src/util"
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/service/sqs"
+	"os"
+)
 
-```go
-    util.LoadSettings()
+func Publish() {
+	util.LoadSettings()
 	Region := os.Getenv("AWS_REGION")
 	QueueURL := os.Getenv("SQS_QUEUE_URL")
 	CredPath := os.Getenv("AWS_CRED_PATH")
@@ -39,23 +45,4 @@
 	sqsWorker.Publish("message 2", mav)
 	sqsWorker.Publish("first message 3", mav)
 	sqsWorker.Publish("first message 4", mav)
-
-	//
-	// Reading from SQS
-	//
-	fw := workers.FutureWorker{
-		Handler: handler,
-		TimeOut: 5,
-	}
-
-	//
-	// Interrupting the reading process
-	//
-	time.AfterFunc(3*time.Second, fw.Stop)
-
-	backend.IOLoop{
-		QueueWorker: sqsWorker,
-		Worker:      fw,
-		StopSignal:  false,
-	}.Run()
-```
+}

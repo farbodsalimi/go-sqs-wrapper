@@ -1,5 +1,5 @@
-hash: cb5b82d0bb0ac2de91c4da552b737c1309be9a61a5ae2c1c1ea1c011c69dec7c
-updated: 2018-11-01T12:59:24.885713-07:00
+hash: a14e15c0d9dbd1f3b1873697708f88e371fa2583367863aab9943d756f2188ee
+updated: 2018-12-17T20:11:48.744044-08:00
 imports:
 - name: github.com/aws/aws-sdk-go
   version: bf8067ceb6e7f51e150c218972dccfeeed892b85
@@ -33,9 +33,13 @@ imports:
   - service/sqs
   - service/sts
 - name: github.com/go-ini/ini
-  version: 9c8236e659b76e87bf02044d06fde8683008ff3e
+  version: f580a806a627a53f46f52abe2b5eedfc7190893a
+- name: github.com/jessevdk/go-flags
+  version: c6ca198ec95c841fdb89fc0de7496fed11ab854e
 - name: github.com/jmespath/go-jmespath
   version: c2b33e8439af944379acbdd9c3a5fe0bc44bd8a5
 - name: github.com/joho/godotenv
   version: 23d116af351c84513e1946b527c88823e476be13
+- name: github.com/ogier/pflag
+  version: 32a05c62658bd1d7c7e75cbc8195de5d585fde0f
 testImports: []

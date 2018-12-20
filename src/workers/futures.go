@@ -2,14 +2,14 @@ package workers
 
 import (
 	"github.com/aws/aws-sdk-go/service/sqs"
+	"syscall"
 )
 
 type futureMessage chan *sqs.Message
 
 type FutureWorker struct {
-	Handler     func(msg *sqs.Message) *sqs.Message
-	TimeOut     int
-	concurrency int
+	Handler func(msg *sqs.Message) *sqs.Message
+	TimeOut int
 }
 
 func (fw FutureWorker) ProcessMessages(messages []*sqs.Message) []*sqs.Message {
@@ -18,6 +18,10 @@ func (fw FutureWorker) ProcessMessages(messages []*sqs.Message) []*sqs.Message {
 		results = append(results, <-processMessageAsync(fw.Handler, msg))
 	}
 	return results
+}
+
+func (fw FutureWorker) Stop() {
+	syscall.Kill(syscall.Getpid(), syscall.SIGINT)
 }
 
 func processMessageAsync(handler func(msg *sqs.Message) *sqs.Message, msg *sqs.Message) futureMessage {
