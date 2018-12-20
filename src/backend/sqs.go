@@ -1,7 +1,7 @@
 package backend
 
 import (
-	"fmt"
+	"log"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
@@ -29,7 +29,7 @@ func (sw SQSWorker) Init() {
 	})
 
 	if err != nil {
-		fmt.Println("Init Error", err)
+		log.Println("Init Error", err)
 		return
 	}
 
@@ -53,11 +53,11 @@ func (sw SQSWorker) FetchMessages() []*sqs.Message {
 	})
 
 	if err != nil {
-		fmt.Println("Fetch Messages Error", err)
+		log.Println("Fetch Messages Error", err)
 	}
 
 	if len(result.Messages) == 0 {
-		fmt.Println("Received no messages")
+		log.Println("Received no messages")
 	}
 
 	return result.Messages
@@ -72,11 +72,11 @@ func (sw SQSWorker) DeleteMessages(messages []*sqs.Message) {
 		})
 
 		if err != nil {
-			fmt.Println("Delete Error", err)
+			log.Println("Delete Error", err)
 			return
 		}
 
-		fmt.Println("Successfully deleted the message!", resultDelete)
+		log.Println("Successfully deleted the message!", resultDelete)
 	}
 }
 
@@ -96,9 +96,9 @@ func (sw SQSWorker) Publish(message string, mav map[string]*sqs.MessageAttribute
 	})
 
 	if err != nil {
-		fmt.Println("Error", err)
+		log.Println("Error", err)
 		return
 	}
 
-	fmt.Println("Successfully published to the queue!", *result.MessageId)
+	log.Println("Successfully published to the queue!", *result.MessageId)
 }

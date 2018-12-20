@@ -4,8 +4,8 @@ import (
 	"../src/backend"
 	"../src/util"
 	"../src/workers"
-	"fmt"
 	"github.com/aws/aws-sdk-go/service/sqs"
+	"log"
 	"os"
 	"time"
 )
@@ -46,6 +46,6 @@ func Read() {
 }
 
 func handler(msg *sqs.Message) *sqs.Message {
-	fmt.Println(msg)
+	log.Println(msg)
 	return msg
 }
