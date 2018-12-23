@@ -1,9 +1,13 @@
 package main
 
 import (
+	"./src/backend"
 	"./src/cli"
+	"./src/util"
+	"./src/workers"
 	"bytes"
-	"fmt"
+	"encoding/json"
+	"github.com/aws/aws-sdk-go/service/sqs"
 	"github.com/jessevdk/go-flags"
 	"log"
 	"os"
@@ -15,20 +19,52 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	
+	util.LoadSettings()
+	Region := os.Getenv("AWS_REGION")
+	QueueURL := os.Getenv("SQS_QUEUE_URL")
+	CredPath := os.Getenv("AWS_CRED_PATH")
+	CredProfile := os.Getenv("AWS_CRED_PROFILE")
 
-	fmt.Printf("Loading handler: %v ...\n", cli.Opts.Handler)
+	sqsWorker := backend.SQSWorker{
+		Region:      Region,
+		QueueUrl:    QueueURL,
+		CredPath:    CredPath,
+		CredProfile: CredProfile,
+	}
+	sqsWorker.Init()
 
-	command := exec.Command("ls")
+	fw := workers.FutureWorker{
+		Handler: func(msg *sqs.Message) *sqs.Message {
+			// convert sqs message to string
+			jsonMsg, err := json.Marshal(msg)
+			if err != nil {
+				log.Fatal(err)
+			}
+			strMsg := string(jsonMsg)
 
-	// set var to get the output
-	var out bytes.Buffer
+			// pass the message to the handler and execute it
+			command := exec.Command(cli.Opts.Handler, strMsg)
 
-	// set the output to our variable
-	command.Stdout = &out
-	err = command.Run()
-	if err != nil {
-		log.Println(err)
+			// set var to get the output
+			var out bytes.Buffer
+
+			// set the output to our variable
+			command.Stdout = &out
+			err = command.Run()
+			if err != nil {
+				log.Println(err)
+			}
+
+			log.Println(out.String())
+			return msg
+		},
+		TimeOut: 5,
 	}
 
-	fmt.Println(out.String())
+	backend.IOLoop{
+		QueueWorker: sqsWorker,
+		Worker:      fw,
+		StopSignal:  false,
+	}.Run()
 }
