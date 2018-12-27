@@ -3,6 +3,7 @@ GOCMD=go
 GOBUILD=$(GOCMD) build
 GOCLEAN=$(GOCMD) clean
 GOTEST=$(GOCMD) test
+GOTOOL=$(GOCMD) tool
 GOGET=$(GOCMD) get
 BINARY_DIR=./bin
 BINARY_NAME=$(BINARY_DIR)/sqs_wrapper
@@ -16,6 +17,13 @@ build: ## Build the binary
 
 test: ## Test all the test files recursively
 	$(GOTEST) -v ./tests/...
+
+
+test-cover: ## Test and generate the coverage report
+	$(GOTEST) -coverprofile=coverage.out ./tests/... && $(GOTOOL) cover -func=coverage.out
+
+test-show-cover:
+	$(GOTOOL) cover -html=coverage.out
 
 clean: ## Clean the binaries
 	$(GOCLEAN)
