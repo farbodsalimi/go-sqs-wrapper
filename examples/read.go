@@ -2,31 +2,17 @@ package examples
 
 import (
 	"../src/backend"
-	"../src/util"
 	"../src/workers"
 	"github.com/aws/aws-sdk-go/service/sqs"
 	"log"
-	"os"
 	"time"
 )
 
 func Read() {
-	util.LoadSettings()
-	Region := os.Getenv("AWS_REGION")
-	QueueURL := os.Getenv("SQS_QUEUE_URL")
-	CredPath := os.Getenv("AWS_CRED_PATH")
-	CredProfile := os.Getenv("AWS_CRED_PROFILE")
-
-	sqsWorker := backend.SQSWorker{
-		Region:      Region,
-		QueueUrl:    QueueURL,
-		CredPath:    CredPath,
-		CredProfile: CredProfile,
-	}
-	sqsWorker.Init()
+	sqsQueue := new(backend.SQSQueue).Init()
 
 	//
-	// Reading from SQS
+	// Reading from SQSQueue
 	//
 	fw := workers.FutureWorker{
 		Handler: handler,
@@ -39,7 +25,7 @@ func Read() {
 	time.AfterFunc(3*time.Second, fw.Stop)
 
 	backend.IOLoop{
-		QueueWorker: sqsWorker,
+		QueueWorker: sqsQueue,
 		Worker:      fw,
 		StopSignal:  false,
 	}.Run()

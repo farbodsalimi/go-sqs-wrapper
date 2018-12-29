@@ -3,7 +3,6 @@ package main
 import (
 	"./src/backend"
 	"./src/cli"
-	"./src/util"
 	"./src/workers"
 	"bytes"
 	"encoding/json"
@@ -19,20 +18,6 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	
-	util.LoadSettings()
-	Region := os.Getenv("AWS_REGION")
-	QueueURL := os.Getenv("SQS_QUEUE_URL")
-	CredPath := os.Getenv("AWS_CRED_PATH")
-	CredProfile := os.Getenv("AWS_CRED_PROFILE")
-
-	sqsWorker := backend.SQSWorker{
-		Region:      Region,
-		QueueUrl:    QueueURL,
-		CredPath:    CredPath,
-		CredProfile: CredProfile,
-	}
-	sqsWorker.Init()
 
 	fw := workers.FutureWorker{
 		Handler: func(msg *sqs.Message) *sqs.Message {
@@ -62,8 +47,10 @@ func main() {
 		TimeOut: 5,
 	}
 
+	sqsQueue := new(backend.SQSQueue).Init()
+
 	backend.IOLoop{
-		QueueWorker: sqsWorker,
+		QueueWorker: sqsQueue,
 		Worker:      fw,
 		StopSignal:  false,
 	}.Run()

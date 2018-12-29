@@ -2,29 +2,15 @@ package examples
 
 import (
 	"../src/backend"
-	"../src/util"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/sqs"
-	"os"
 )
 
 func Publish() {
-	util.LoadSettings()
-	Region := os.Getenv("AWS_REGION")
-	QueueURL := os.Getenv("SQS_QUEUE_URL")
-	CredPath := os.Getenv("AWS_CRED_PATH")
-	CredProfile := os.Getenv("AWS_CRED_PROFILE")
-
-	sqsWorker := backend.SQSWorker{
-		Region:      Region,
-		QueueUrl:    QueueURL,
-		CredPath:    CredPath,
-		CredProfile: CredProfile,
-	}
-	sqsWorker.Init()
+	sqsQueue := new(backend.SQSQueue).Init()
 
 	//
-	// Publishing to SQS
+	// Publishing to SQSQueue
 	//
 	mav := map[string]*sqs.MessageAttributeValue{
 		"Title": {
@@ -41,8 +27,8 @@ func Publish() {
 		},
 	}
 
-	sqsWorker.Publish("message 1", mav)
-	sqsWorker.Publish("message 2", mav)
-	sqsWorker.Publish("first message 3", mav)
-	sqsWorker.Publish("first message 4", mav)
+	sqsQueue.Publish("message 1", mav)
+	sqsQueue.Publish("message 2", mav)
+	sqsQueue.Publish("first message 3", mav)
+	sqsQueue.Publish("first message 4", mav)
 }

@@ -6,7 +6,7 @@ import (
 
 type IOLoop struct {
 	StopSignal  bool
-	QueueWorker SQSWorker
+	QueueWorker SQSQueue
 	Worker      workers.FutureWorker
 }
 
