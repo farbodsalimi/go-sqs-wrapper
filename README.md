@@ -44,16 +44,10 @@ Examples:
 ./bin/sqs_wrapper --handler=~/path/to/your/handler/main
 ```
 
-## Examples
+## Code Examples
 
 ```go
-sqsWorker := backend.SQSWorker{
-    Region:      Region,
-    QueueUrl:    QueueURL,
-    CredPath:    CredPath,
-    CredProfile: CredProfile,
-}
-sqsWorker.Init()
+sqsQueue := new(backend.SQSQueue).Init()
 
 //
 // Publishing to SQS
@@ -72,11 +66,7 @@ mav := map[string]*sqs.MessageAttributeValue{
         StringValue: aws.String("6"),
     },
 }
-
-sqsWorker.Publish("message 1", mav)
-sqsWorker.Publish("message 2", mav)
-sqsWorker.Publish("first message 3", mav)
-sqsWorker.Publish("first message 4", mav)
+sqsQueue.Publish("message 1", mav)
 
 //
 // Reading from SQS
@@ -95,7 +85,7 @@ fw := workers.FutureWorker{
 time.AfterFunc(3*time.Second, fw.Stop)
 
 backend.IOLoop{
-    QueueWorker: sqsWorker,
+    QueueWorker: sqsQueue,
     Worker:      fw,
     StopSignal:  false,
 }.Run()
