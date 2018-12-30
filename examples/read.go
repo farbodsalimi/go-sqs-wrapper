@@ -9,10 +9,13 @@ import (
 )
 
 func Read() {
+	//
+	// Initialize your SQS queue.
+	//
 	sqsQueue := new(backend.SQSQueue).Init()
 
 	//
-	// Reading from SQSQueue
+	// Creating a future worker
 	//
 	fw := workers.FutureWorker{
 		Handler: handler,
@@ -24,6 +27,9 @@ func Read() {
 	//
 	time.AfterFunc(3*time.Second, fw.Stop)
 
+	//
+	// Starting an infinite io loop
+	//
 	backend.IOLoop{
 		QueueWorker: sqsQueue,
 		Worker:      fw,

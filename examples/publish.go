@@ -29,6 +29,6 @@ func Publish() {
 
 	sqsQueue.Publish("message 1", mav)
 	sqsQueue.Publish("message 2", mav)
-	sqsQueue.Publish("first message 3", mav)
-	sqsQueue.Publish("first message 4", mav)
+	sqsQueue.Publish("message 3", mav)
+	sqsQueue.Publish("message 4", mav)
 }
