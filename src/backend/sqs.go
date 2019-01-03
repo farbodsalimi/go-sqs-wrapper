@@ -1,18 +1,20 @@
 package backend
 
 import (
+	"log"
+
 	"../util"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/sqs"
-	"log"
 )
 
-var Client *sqs.SQS
+// currect client session
+var clientSession *sqs.SQS
 
 // SQSQueue structure
 type SQSQueue struct {
-	QueueUrl            string
+	QueueURL            string
 	Region              string
 	MaxRetries          int
 	MaxNumberOfMessages int64
@@ -20,43 +22,43 @@ type SQSQueue struct {
 	WaitTimeSeconds     int64
 }
 
-// Init, initializes the sqs client object
+// Init initializes the sqs client object
 func (sq SQSQueue) Init() SQSQueue {
 	/*
-	Load all the required config from the .env file.
-	Consider that AWS SDK will automatically use the
-	AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY from
-	the environment therefore we don't have to manually
-	pass them along.
-	 */
+		Load all the required config from the .env file.
+		Consider that AWS SDK will automatically use the
+		AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY from
+		the environment therefore we don't have to manually
+		pass them along.
+	*/
 	util.LoadDotEnv()
 
 	region, err := util.GetEnvStr(util.GetEnvParams{Key: "AWS_REGION"})
 	sq.Region = region
 	util.CheckErr(err)
 
-	queueUrl, err := util.GetEnvStr(util.GetEnvParams{Key: "SQS_QUEUE_URL"})
+	queueURL, err := util.GetEnvStr(util.GetEnvParams{Key: "SQS_QUEUE_URL"})
 	util.CheckErr(err)
-	sq.QueueUrl = queueUrl
+	sq.QueueURL = queueURL
 
 	maxRetries, err := util.GetEnvInt(util.GetEnvParams{Key: "SQS_MAX_RETRIES"})
 	util.CheckErr(err)
 	sq.MaxRetries = maxRetries
 
-	maxNumberOfMessages, err := util.GetEnvInt64(util.GetEnvParams{"MAX_NUMBER_OF_MESSAGES", "1"})
+	maxNumberOfMessages, err := util.GetEnvInt64(util.GetEnvParams{Key: "MAX_NUMBER_OF_MESSAGES", DefaultValue: "1"})
 	util.CheckErr(err)
 	sq.MaxNumberOfMessages = maxNumberOfMessages
 
-	visibilityTimeout, err := util.GetEnvInt64(util.GetEnvParams{"VISIBILITY_TIMEOUT", "20"})
+	visibilityTimeout, err := util.GetEnvInt64(util.GetEnvParams{Key: "VISIBILITY_TIMEOUT", DefaultValue: "20"})
 	util.CheckErr(err)
 	sq.VisibilityTimeout = visibilityTimeout
 
-	waitTimeSeconds, err := util.GetEnvInt64(util.GetEnvParams{"WAIT_TIME_SECONDS", "0"})
+	waitTimeSeconds, err := util.GetEnvInt64(util.GetEnvParams{Key: "WAIT_TIME_SECONDS", DefaultValue: "0"})
 	util.CheckErr(err)
 	sq.WaitTimeSeconds = waitTimeSeconds
 
 	/*
-	Create a new AWS session
+		Create a new AWS session
 	*/
 	s, err := session.NewSession(&aws.Config{
 		Region:     aws.String(sq.Region),
@@ -65,21 +67,21 @@ func (sq SQSQueue) Init() SQSQueue {
 	if err != nil {
 		log.Fatal("SQSQueue NewSession Error", err)
 	}
-	Client = sqs.New(s)
+	clientSession = sqs.New(s)
 
 	return sq
 }
 
-// FetchMessages, fetches messages from sqs
+// FetchMessages fetches messages from sqs
 func (sq SQSQueue) FetchMessages() []*sqs.Message {
-	result, err := Client.ReceiveMessage(&sqs.ReceiveMessageInput{
+	result, err := clientSession.ReceiveMessage(&sqs.ReceiveMessageInput{
 		AttributeNames: []*string{
 			aws.String(sqs.MessageSystemAttributeNameSentTimestamp),
 		},
 		MessageAttributeNames: []*string{
 			aws.String(sqs.QueueAttributeNameAll),
 		},
-		QueueUrl:            aws.String(sq.QueueUrl),
+		QueueUrl:            aws.String(sq.QueueURL),
 		MaxNumberOfMessages: aws.Int64(sq.MaxNumberOfMessages),
 		VisibilityTimeout:   aws.Int64(sq.VisibilityTimeout), // 20 seconds
 		WaitTimeSeconds:     aws.Int64(sq.WaitTimeSeconds),
@@ -96,11 +98,11 @@ func (sq SQSQueue) FetchMessages() []*sqs.Message {
 	return result.Messages
 }
 
-// DeleteMessages, deletes messages from sqs
+// DeleteMessages deletes messages from sqs
 func (sq SQSQueue) DeleteMessages(messages []*sqs.Message) {
 	for _, message := range messages {
-		resultDelete, err := Client.DeleteMessage(&sqs.DeleteMessageInput{
-			QueueUrl:      aws.String(sq.QueueUrl),
+		resultDelete, err := clientSession.DeleteMessage(&sqs.DeleteMessageInput{
+			QueueUrl:      aws.String(sq.QueueURL),
 			ReceiptHandle: message.ReceiptHandle,
 		})
 
@@ -113,7 +115,7 @@ func (sq SQSQueue) DeleteMessages(messages []*sqs.Message) {
 	}
 }
 
-// Publish, publishes messages to sqs
+// Publish publishes messages to sqs
 func (sq SQSQueue) Publish(message string, mav map[string]*sqs.MessageAttributeValue) {
 
 	var messageAttributes map[string]*sqs.MessageAttributeValue
@@ -121,11 +123,11 @@ func (sq SQSQueue) Publish(message string, mav map[string]*sqs.MessageAttributeV
 		messageAttributes = map[string]*sqs.MessageAttributeValue{}
 	}
 
-	result, err := Client.SendMessage(&sqs.SendMessageInput{
+	result, err := clientSession.SendMessage(&sqs.SendMessageInput{
 		DelaySeconds:      aws.Int64(10),
 		MessageAttributes: messageAttributes,
 		MessageBody:       aws.String(message),
-		QueueUrl:          aws.String(sq.QueueUrl),
+		QueueUrl:          aws.String(sq.QueueURL),
 	})
 
 	if err != nil {
