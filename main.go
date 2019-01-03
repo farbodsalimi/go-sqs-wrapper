@@ -1,16 +1,17 @@
 package main
 
 import (
-	"./src/backend"
-	"./src/cli"
-	"./src/workers"
 	"bytes"
 	"encoding/json"
-	"github.com/aws/aws-sdk-go/service/sqs"
-	"github.com/jessevdk/go-flags"
 	"log"
 	"os"
 	"os/exec"
+
+	"./src/backend"
+	"./src/cli"
+	"./src/workers"
+	"github.com/aws/aws-sdk-go/service/sqs"
+	"github.com/jessevdk/go-flags"
 )
 
 func main() {

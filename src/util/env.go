@@ -10,11 +10,13 @@ import (
 	"github.com/joho/godotenv"
 )
 
+// GetEnvParams struct
 type GetEnvParams struct {
 	Key          string
 	DefaultValue string
 }
 
+// ErrEnvVarEmpty returns custom error for empty or undefined environment variable
 func ErrEnvVarEmpty(key string) error {
 	return errors.New(fmt.Sprintf("getenv: %s environment variable empty", key))
 }
@@ -27,7 +29,7 @@ func LoadDotEnv() {
 	}
 }
 
-//
+// GetEnvStr returns environment variable in string
 func GetEnvStr(params GetEnvParams) (string, error) {
 	v, exists := os.LookupEnv(params.Key)
 	if exists {
@@ -38,7 +40,7 @@ func GetEnvStr(params GetEnvParams) (string, error) {
 	return v, ErrEnvVarEmpty(params.Key)
 }
 
-//
+// GetEnvInt returns environment variable in interger
 func GetEnvInt(params GetEnvParams) (int, error) {
 	s, err := GetEnvStr(params)
 	if err != nil {
@@ -51,6 +53,7 @@ func GetEnvInt(params GetEnvParams) (int, error) {
 	return v, nil
 }
 
+// GetEnvInt64 returns environment variable in interger 64
 func GetEnvInt64(params GetEnvParams) (int64, error) {
 	v, err := GetEnvInt(params)
 	if err != nil {
@@ -59,7 +62,7 @@ func GetEnvInt64(params GetEnvParams) (int64, error) {
 	return int64(v), nil
 }
 
-//
+// GetEnvBool returns environment variable in boolean
 func GetEnvBool(params GetEnvParams) (bool, error) {
 	s, err := GetEnvStr(params)
 	if err != nil {

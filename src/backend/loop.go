@@ -4,12 +4,14 @@ import (
 	"../workers"
 )
 
+// IOLoop structure
 type IOLoop struct {
 	StopSignal  bool
 	QueueWorker SQSQueue
 	Worker      workers.FutureWorker
 }
 
+// RunOnce starts one IO cycle
 func (iol IOLoop) RunOnce() {
 	messages := iol.QueueWorker.FetchMessages()
 	if len(messages) > 0 {
@@ -20,6 +22,7 @@ func (iol IOLoop) RunOnce() {
 	}
 }
 
+// Run starts an infinite IO loop
 func (iol IOLoop) Run() {
 	for iol.StopSignal == false {
 		iol.RunOnce()
