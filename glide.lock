@@ -1,45 +1,10 @@
-hash: a14e15c0d9dbd1f3b1873697708f88e371fa2583367863aab9943d756f2188ee
-updated: 2018-12-17T20:11:48.744044-08:00
+hash: 8f42eccd73aad01657eaeefa86095975f446517bd0e01ab47ae1ae1ce4d879b6
+updated: 2019-01-05T22:37:09.832391-08:00
 imports:
 - name: github.com/aws/aws-sdk-go
   version: bf8067ceb6e7f51e150c218972dccfeeed892b85
-  subpackages:
-  - aws
-  - aws/awserr
-  - aws/awsutil
-  - aws/client
-  - aws/client/metadata
-  - aws/corehandlers
-  - aws/credentials
-  - aws/credentials/ec2rolecreds
-  - aws/credentials/endpointcreds
-  - aws/credentials/stscreds
-  - aws/csm
-  - aws/defaults
-  - aws/ec2metadata
-  - aws/endpoints
-  - aws/request
-  - aws/session
-  - aws/signer/v4
-  - internal/sdkio
-  - internal/sdkrand
-  - internal/sdkuri
-  - internal/shareddefaults
-  - private/protocol
-  - private/protocol/query
-  - private/protocol/query/queryutil
-  - private/protocol/rest
-  - private/protocol/xml/xmlutil
-  - service/sqs
-  - service/sts
-- name: github.com/go-ini/ini
-  version: f580a806a627a53f46f52abe2b5eedfc7190893a
-- name: github.com/jessevdk/go-flags
-  version: c6ca198ec95c841fdb89fc0de7496fed11ab854e
-- name: github.com/jmespath/go-jmespath
-  version: c2b33e8439af944379acbdd9c3a5fe0bc44bd8a5
+- name: github.com/google/subcommands
+  version: 46f0354f63152e8801bb460d26f5b6c4c878efbb
 - name: github.com/joho/godotenv
   version: 23d116af351c84513e1946b527c88823e476be13
-- name: github.com/ogier/pflag
-  version: 32a05c62658bd1d7c7e75cbc8195de5d585fde0f
 testImports: []

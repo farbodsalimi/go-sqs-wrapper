@@ -4,5 +4,4 @@ import:
   version: v1.15.54
 - package: github.com/joho/godotenv
   version: v1.3.0
-- package: github.com/jessevdk/go-flags
-  version: v1.4.0
+- package: github.com/google/subcommands
