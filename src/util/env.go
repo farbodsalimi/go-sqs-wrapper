@@ -1,7 +1,6 @@
 package util
 
 import (
-	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -18,7 +17,7 @@ type GetEnvParams struct {
 
 // ErrEnvVarEmpty returns custom error for empty or undefined environment variable
 func ErrEnvVarEmpty(key string) error {
-	return errors.New(fmt.Sprintf("getenv: %s environment variable empty", key))
+	return fmt.Errorf("getenv: %s environment variable empty", key)
 }
 
 // LoadDotEnv loads all the environment variables from the .env file
