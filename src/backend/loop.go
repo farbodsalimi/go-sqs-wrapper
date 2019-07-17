@@ -1,8 +1,6 @@
 package backend
 
-import (
-	"../workers"
-)
+import "go-sqs-wrapper/src/workers"
 
 // IOLoop structure
 type IOLoop struct {

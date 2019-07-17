@@ -1,9 +1,9 @@
 package backend
 
 import (
+	"go-sqs-wrapper/src/util"
 	"log"
 
-	"../util"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/sqs"

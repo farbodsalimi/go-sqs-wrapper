@@ -1,7 +1,0 @@
-package: go-sqs-wrapper
-import:
-- package: github.com/aws/aws-sdk-go
-  version: v1.15.54
-- package: github.com/joho/godotenv
-  version: v1.3.0
-- package: github.com/google/subcommands

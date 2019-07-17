@@ -1,7 +1,7 @@
 package main
 
 import (
-	"./src/cli"
+	"go-sqs-wrapper/src/cli"
 )
 
 func main() {

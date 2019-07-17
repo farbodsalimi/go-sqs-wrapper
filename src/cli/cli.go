@@ -3,9 +3,8 @@ package cli
 import (
 	"context"
 	"flag"
+	"go-sqs-wrapper/src/cli/cmds"
 	"os"
-
-	"./cmds"
 
 	"github.com/google/subcommands"
 )

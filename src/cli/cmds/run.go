@@ -6,12 +6,11 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"go-sqs-wrapper/src/backend"
+	"go-sqs-wrapper/src/util"
+	"go-sqs-wrapper/src/workers"
 	"log"
 	"os/exec"
-
-	"../../backend"
-	"../../util"
-	"../../workers"
 
 	"github.com/aws/aws-sdk-go/service/sqs"
 	"github.com/google/subcommands"
