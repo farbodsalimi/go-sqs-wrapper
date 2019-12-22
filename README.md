@@ -1,5 +1,7 @@
 # golang-sqs-wrapper
 
+A wrapper library for sending and receiving data to/from AWS SQS
+
 ## Environment Variables
 
 The first step is to define all of your environment variables in `.env`. You can find and example of `.env` file in the root folder.
