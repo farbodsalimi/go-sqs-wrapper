@@ -1,11 +1,13 @@
 package examples
 
 import (
-	"../src/backend"
+	"go-sqs-wrapper/src/backend"
+
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/sqs"
 )
 
+// Publish an example of publishing messages to sqs
 func Publish() {
 	sqsQueue := new(backend.SQSQueue).Init()
 

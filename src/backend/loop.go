@@ -22,7 +22,7 @@ func (iol IOLoop) RunOnce() {
 
 // Run starts an infinite IO loop
 func (iol IOLoop) Run() {
-	for iol.StopSignal == false {
+	for !iol.StopSignal {
 		iol.RunOnce()
 	}
 }

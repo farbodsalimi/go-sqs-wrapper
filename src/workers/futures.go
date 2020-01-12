@@ -1,6 +1,7 @@
 package workers
 
 import (
+	"log"
 	"syscall"
 
 	"github.com/aws/aws-sdk-go/service/sqs"
@@ -25,7 +26,10 @@ func (fw FutureWorker) ProcessMessages(messages []*sqs.Message) []*sqs.Message {
 
 // Stop kills the worker
 func (fw FutureWorker) Stop() {
-	syscall.Kill(syscall.Getpid(), syscall.SIGINT)
+	err := syscall.Kill(syscall.Getpid(), syscall.SIGINT)
+	if err != nil {
+		log.Panic(err)
+	}
 }
 
 func processMessageAsync(handler func(msg *sqs.Message) *sqs.Message, msg *sqs.Message) futureMessage {

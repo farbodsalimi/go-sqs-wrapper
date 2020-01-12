@@ -18,7 +18,6 @@ build: ## Build the binary
 test: ## Test all the test files recursively
 	$(GOTEST) -v ./tests/... -coverpkg=./...
 
-
 test-cover: ## Test and generate the coverage report
 	$(GOTEST)  -coverprofile=coverage.out ./tests/... -coverpkg=./... && $(GOTOOL) cover -func=coverage.out
 

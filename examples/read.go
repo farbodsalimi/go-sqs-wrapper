@@ -1,13 +1,16 @@
 package examples
 
 import (
-	"../src/backend"
-	"../src/workers"
-	"github.com/aws/aws-sdk-go/service/sqs"
 	"log"
 	"time"
+
+	"go-sqs-wrapper/src/backend"
+	"go-sqs-wrapper/src/workers"
+
+	"github.com/aws/aws-sdk-go/service/sqs"
 )
 
+// Read an example of reading messages from sqs
 func Read() {
 	//
 	// Initialize your SQS queue.
