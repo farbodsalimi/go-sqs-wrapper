@@ -16,11 +16,11 @@ build: ## Build the binary
 	$(GOBUILD) -o $(BINARY_NAME) -v
 
 test: ## Test all the test files recursively
-	$(GOTEST) -v ./tests/...
+	$(GOTEST) -v ./tests/... -coverpkg=./...
 
 
 test-cover: ## Test and generate the coverage report
-	$(GOTEST) -coverprofile=coverage.out ./tests/... && $(GOTOOL) cover -func=coverage.out
+	$(GOTEST)  -coverprofile=coverage.out ./tests/... -coverpkg=./... && $(GOTOOL) cover -func=coverage.out
 
 test-show-cover:
 	$(GOTOOL) cover -html=coverage.out
