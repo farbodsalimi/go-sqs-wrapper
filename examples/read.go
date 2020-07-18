@@ -4,8 +4,8 @@ import (
 	"log"
 	"time"
 
-	"go-sqs-wrapper/src/backend"
-	"go-sqs-wrapper/src/workers"
+	"go-sqs-wrapper/pkg/backend"
+	"go-sqs-wrapper/pkg/workers"
 
 	"github.com/aws/aws-sdk-go/service/sqs"
 )

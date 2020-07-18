@@ -1,10 +1,11 @@
 package util
 
 import (
-	"go-sqs-wrapper/src/util"
 	"os"
 	"strconv"
 	"testing"
+
+	"go-sqs-wrapper/pkg/util"
 
 	"github.com/stretchr/testify/assert"
 )

@@ -1,7 +1,7 @@
 package examples
 
 import (
-	"go-sqs-wrapper/src/backend"
+	"go-sqs-wrapper/pkg/backend"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/sqs"
