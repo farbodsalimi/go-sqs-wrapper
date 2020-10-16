@@ -19,13 +19,13 @@ The first step is to define all of your environment variables in `.env`. You can
 
 ## Usage
 
-### - Initializing your sqs queue
+### Initializing your sqs queue
 
 ```go
 sqsQueue := new(backend.SQSQueue).Init()
 ```
 
-### - Publishing to SQS
+### Publishing to SQS
 
 ```go
 mav := map[string]*sqs.MessageAttributeValue{
@@ -45,7 +45,7 @@ mav := map[string]*sqs.MessageAttributeValue{
 sqsQueue.Publish("message 1", mav)
 ```
 
-### - Reading from SQS via CLI
+### Reading from SQS via CLI
 
 ```
 ./bin/sqs_wrapper run --handler=echo
@@ -70,7 +70,7 @@ Subcommands:
 Use "sqs_wrapper flags" for a list of top-level flags
 ```
 
-### - Reading from SQS programatically
+### Reading from SQS programatically
 
 ```go
 // Creating a future worker
