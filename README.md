@@ -93,5 +93,5 @@ backend.IOLoop{
 Note: you can interrupt your IO loop by `fw.Stop()`, for example:
 
 ```bash
-time.AfterFunc(3*time.Second, fw.Stop)`
+time.AfterFunc(3*time.Second, fw.Stop)
 ```
