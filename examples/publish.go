@@ -3,8 +3,7 @@ package examples
 import (
 	"go-sqs-wrapper/pkg/backend"
 
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/service/sqs"
+	"github.com/aws/aws-sdk-go-v2/service/sqs/types"
 )
 
 // Publish an example of publishing messages to sqs
@@ -14,18 +13,18 @@ func Publish() {
 	//
 	// Publishing to SQSQueue
 	//
-	mav := map[string]*sqs.MessageAttributeValue{
+	mav := map[string]types.MessageAttributeValue{
 		"Title": {
-			DataType:    aws.String("String"),
-			StringValue: aws.String("The Whistler"),
+			DataType:    new("String"),
+			StringValue: new("The Whistler"),
 		},
 		"Author": {
-			DataType:    aws.String("String"),
-			StringValue: aws.String("Farbod Salimi"),
+			DataType:    new("String"),
+			StringValue: new("Farbod Salimi"),
 		},
 		"WeeksOn": {
-			DataType:    aws.String("Number"),
-			StringValue: aws.String("6"),
+			DataType:    new("Number"),
+			StringValue: new("6"),
 		},
 	}
 

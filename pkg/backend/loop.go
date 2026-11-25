@@ -4,13 +4,12 @@ import "go-sqs-wrapper/pkg/workers"
 
 // IOLoop structure
 type IOLoop struct {
-	StopSignal  bool
-	QueueWorker SQSQueue
-	Worker      workers.FutureWorker
+	QueueWorker *SQSQueue
+	Worker      *workers.FutureWorker
 }
 
 // RunOnce starts one IO cycle
-func (iol IOLoop) RunOnce() {
+func (iol *IOLoop) RunOnce() {
 	messages := iol.QueueWorker.FetchMessages()
 	if len(messages) > 0 {
 		processedMessages := iol.Worker.ProcessMessages(messages)
@@ -20,9 +19,9 @@ func (iol IOLoop) RunOnce() {
 	}
 }
 
-// Run starts an infinite IO loop
-func (iol IOLoop) Run() {
-	for !iol.StopSignal {
+// Run starts an infinite IO loop until the worker's context is cancelled
+func (iol *IOLoop) Run() {
+	for iol.Worker.IsRunning() {
 		iol.RunOnce()
 	}
 }
