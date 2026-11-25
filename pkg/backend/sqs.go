@@ -84,11 +84,8 @@ func (sq *SQSQueue) Init() *SQSQueue {
 }
 
 // FetchMessages fetches messages from sqs
-func (sq *SQSQueue) FetchMessages() []types.Message {
-	result, err := sq.client.ReceiveMessage(context.Background(), &sqs.ReceiveMessageInput{
-		AttributeNames: []types.QueueAttributeName{
-			types.QueueAttributeNameAll,
-		},
+func (sq *SQSQueue) FetchMessages(ctx context.Context) []types.Message {
+	result, err := sq.client.ReceiveMessage(ctx, &sqs.ReceiveMessageInput{
 		MessageAttributeNames: []string{"All"},
 		MessageSystemAttributeNames: []types.MessageSystemAttributeName{
 			types.MessageSystemAttributeNameSentTimestamp,
@@ -112,16 +109,16 @@ func (sq *SQSQueue) FetchMessages() []types.Message {
 }
 
 // DeleteMessages deletes messages from sqs
-func (sq *SQSQueue) DeleteMessages(messages []types.Message) {
+func (sq *SQSQueue) DeleteMessages(ctx context.Context, messages []types.Message) {
 	for _, message := range messages {
-		_, err := sq.client.DeleteMessage(context.Background(), &sqs.DeleteMessageInput{
+		_, err := sq.client.DeleteMessage(ctx, &sqs.DeleteMessageInput{
 			QueueUrl:      &sq.QueueURL,
 			ReceiptHandle: message.ReceiptHandle,
 		})
 
 		if err != nil {
 			log.Println("Delete Error", err)
-			return
+			continue
 		}
 
 		log.Println("Successfully deleted the message!")

@@ -7,7 +7,10 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"os"
 	"os/exec"
+	"os/signal"
+	"syscall"
 
 	"go-sqs-wrapper/pkg/backend"
 	"go-sqs-wrapper/pkg/util"
@@ -41,7 +44,7 @@ func (rc *RunCmd) SetFlags(f *flag.FlagSet) {
 }
 
 // Execute run subcommand
-func (rc *RunCmd) Execute(_ context.Context, f *flag.FlagSet, _ ...any) subcommands.ExitStatus {
+func (rc *RunCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...any) subcommands.ExitStatus {
 	if rc.handler == "" || !util.IsCommandAvailable(rc.handler) {
 		fmt.Println("Your handler is not valid!")
 		return subcommands.ExitFailure
@@ -76,7 +79,10 @@ func (rc *RunCmd) Execute(_ context.Context, f *flag.FlagSet, _ ...any) subcomma
 		},
 		TimeOut: 5,
 	}
-	fw.WithContext(context.Background())
+
+	// Stop the loop gracefully on Ctrl+C / SIGTERM.
+	ctx, stop := signal.NotifyContext(ctx, os.Interrupt, syscall.SIGTERM)
+	defer stop()
 
 	sqsQueue := new(backend.SQSQueue).Init()
 
@@ -84,7 +90,7 @@ func (rc *RunCmd) Execute(_ context.Context, f *flag.FlagSet, _ ...any) subcomma
 		QueueWorker: sqsQueue,
 		Worker:      fw,
 	}
-	iol.Run()
+	iol.Run(ctx)
 
 	return subcommands.ExitSuccess
 }

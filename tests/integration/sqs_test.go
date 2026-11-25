@@ -59,7 +59,7 @@ func TestPublishAndFetchMessages(t *testing.T) {
 	sq.Publish("hello world", nil)
 
 	// Fetch
-	messages := sq.FetchMessages()
+	messages := sq.FetchMessages(context.Background())
 	require.Len(t, messages, 1)
 	assert.Equal(t, "hello world", *messages[0].Body)
 }
@@ -79,7 +79,7 @@ func TestPublishWithAttributes(t *testing.T) {
 	}
 	sq.Publish("with attrs", attrs)
 
-	messages := sq.FetchMessages()
+	messages := sq.FetchMessages(context.Background())
 	require.Len(t, messages, 1)
 	assert.Equal(t, "with attrs", *messages[0].Body)
 	assert.Contains(t, messages[0].MessageAttributes, "Title")
@@ -95,13 +95,13 @@ func TestDeleteMessages(t *testing.T) {
 
 	sq.Publish("to be deleted", nil)
 
-	messages := sq.FetchMessages()
+	messages := sq.FetchMessages(context.Background())
 	require.Len(t, messages, 1)
 
-	sq.DeleteMessages(messages)
+	sq.DeleteMessages(context.Background(), messages)
 
 	// Queue should be empty now
-	remaining := sq.FetchMessages()
+	remaining := sq.FetchMessages(context.Background())
 	assert.Empty(t, remaining)
 }
 
@@ -112,7 +112,7 @@ func TestFetchEmptyQueue(t *testing.T) {
 	sq := backend.NewSQSQueue(client, queueURL)
 	sq.WaitTimeSeconds = 0
 
-	messages := sq.FetchMessages()
+	messages := sq.FetchMessages(context.Background())
 	assert.Empty(t, messages)
 }
 
@@ -130,7 +130,7 @@ func TestPublishMultipleMessages(t *testing.T) {
 
 	var all []types.Message
 	for range 3 {
-		msgs := sq.FetchMessages()
+		msgs := sq.FetchMessages(context.Background())
 		all = append(all, msgs...)
 		if len(all) >= 3 {
 			break
@@ -156,19 +156,18 @@ func TestIOLoopProcessesMessages(t *testing.T) {
 		},
 		TimeOut: 5,
 	}
-	fw.WithContext(context.Background())
 
 	// Run a single cycle
 	iol := &backend.IOLoop{
 		QueueWorker: sq,
 		Worker:      fw,
 	}
-	iol.RunOnce()
+	iol.RunOnce(context.Background())
 
 	assert.Equal(t, []string{"ioloop test"}, processed)
 
 	// Message should be deleted after processing
-	remaining := sq.FetchMessages()
+	remaining := sq.FetchMessages(context.Background())
 	assert.Empty(t, remaining)
 }
 
@@ -190,12 +189,11 @@ func TestFutureWorkerConcurrency(t *testing.T) {
 		},
 		TimeOut: 5,
 	}
-	fw.WithContext(context.Background())
 
 	// Fetch all messages (may need multiple fetches)
 	var allMsgs []types.Message
 	for range 5 {
-		msgs := sq.FetchMessages()
+		msgs := sq.FetchMessages(context.Background())
 		allMsgs = append(allMsgs, msgs...)
 		if len(allMsgs) >= 5 {
 			break
@@ -203,7 +201,7 @@ func TestFutureWorkerConcurrency(t *testing.T) {
 	}
 
 	// Process them all concurrently
-	results := fw.ProcessMessages(allMsgs)
+	results := fw.ProcessMessages(context.Background(), allMsgs)
 	assert.Len(t, results, len(allMsgs))
 }
 
@@ -224,12 +222,11 @@ func TestFutureWorkerTimeout(t *testing.T) {
 		},
 		TimeOut: 1, // 1 second timeout
 	}
-	fw.WithContext(context.Background())
 
-	messages := sq.FetchMessages()
+	messages := sq.FetchMessages(context.Background())
 	require.Len(t, messages, 1)
 
 	// Should return nil results because handler times out
-	results := fw.ProcessMessages(messages)
+	results := fw.ProcessMessages(context.Background(), messages)
 	assert.Empty(t, results)
 }

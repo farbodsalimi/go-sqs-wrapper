@@ -11,19 +11,13 @@ type futureMessage chan *types.Message
 
 // FutureWorker structure
 type FutureWorker struct {
-	Handler    func(ctx context.Context, msg *types.Message) *types.Message
-	TimeOut    int
-	ctx        context.Context
-	cancelFunc context.CancelFunc
+	Handler func(ctx context.Context, msg *types.Message) *types.Message
+	TimeOut int
 }
 
 // ProcessMessages processes incoming messages concurrently using fan-out/fan-in.
-func (fw *FutureWorker) ProcessMessages(messages []types.Message) []types.Message {
-	ctx := fw.ctx
-	if ctx == nil {
-		ctx = context.Background()
-	}
-
+// A cancelled ctx aborts in-flight handlers (nil result, dropped from output).
+func (fw *FutureWorker) ProcessMessages(ctx context.Context, messages []types.Message) []types.Message {
 	// Fan-out: launch all goroutines first
 	futures := make([]futureMessage, len(messages))
 	for i := range messages {
@@ -38,31 +32,6 @@ func (fw *FutureWorker) ProcessMessages(messages []types.Message) []types.Messag
 		}
 	}
 	return results
-}
-
-// Stop gracefully stops the worker
-func (fw *FutureWorker) Stop() {
-	if fw.cancelFunc != nil {
-		fw.cancelFunc()
-	}
-}
-
-// WithContext sets up the worker with a cancellable context
-func (fw *FutureWorker) WithContext(ctx context.Context) {
-	fw.ctx, fw.cancelFunc = context.WithCancel(ctx)
-}
-
-// IsRunning returns true if the worker context is not cancelled
-func (fw *FutureWorker) IsRunning() bool {
-	if fw.ctx == nil {
-		return true // no context means always running for backward compatibility
-	}
-	select {
-	case <-fw.ctx.Done():
-		return false
-	default:
-		return true
-	}
 }
 
 func (fw *FutureWorker) processMessageAsync(ctx context.Context, msg *types.Message) futureMessage {

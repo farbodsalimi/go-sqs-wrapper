@@ -25,12 +25,12 @@ func Read() {
 		Handler: handler,
 		TimeOut: 5,
 	}
-	fw.WithContext(context.Background())
 
 	//
-	// Interrupting the reading process
+	// Interrupting the reading process after 3 seconds.
 	//
-	time.AfterFunc(3*time.Second, fw.Stop)
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
 
 	//
 	// Starting an infinite io loop
@@ -39,7 +39,7 @@ func Read() {
 		QueueWorker: sqsQueue,
 		Worker:      fw,
 	}
-	iol.Run()
+	iol.Run(ctx)
 }
 
 func handler(_ context.Context, msg *types.Message) *types.Message {
