@@ -24,6 +24,19 @@ test-cover: ## Test and generate the coverage report
 test-show-cover:
 	$(GOTOOL) cover -html=coverage.out
 
+integration-up: ## Start LocalStack for integration tests
+	docker compose up -d
+	@echo "Waiting for LocalStack to be ready..."
+	@until curl -s http://localhost:4566/_localstack/health | grep -q '"sqs": "available"'; do sleep 1; done
+	@echo "LocalStack is ready."
+
+integration-down: ## Stop LocalStack
+	docker compose down
+
+integration-test: integration-up ## Run integration tests against LocalStack
+	$(GOTEST) -v -tags integration ./tests/integration/...
+	$(MAKE) integration-down
+
 clean: ## Clean the binaries
 	$(GOCLEAN)
 	rm -f $(BINARY_NAME)

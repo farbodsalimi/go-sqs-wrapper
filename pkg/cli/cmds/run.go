@@ -7,13 +7,16 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"os"
 	"os/exec"
+	"os/signal"
+	"syscall"
 
 	"go-sqs-wrapper/pkg/backend"
 	"go-sqs-wrapper/pkg/util"
 	"go-sqs-wrapper/pkg/workers"
 
-	"github.com/aws/aws-sdk-go/service/sqs"
+	"github.com/aws/aws-sdk-go-v2/service/sqs/types"
 	"github.com/google/subcommands"
 )
 
@@ -41,7 +44,7 @@ func (rc *RunCmd) SetFlags(f *flag.FlagSet) {
 }
 
 // Execute run subcommand
-func (rc *RunCmd) Execute(_ context.Context, f *flag.FlagSet, _ ...interface{}) subcommands.ExitStatus {
+func (rc *RunCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...any) subcommands.ExitStatus {
 	if rc.handler == "" || !util.IsCommandAvailable(rc.handler) {
 		fmt.Println("Your handler is not valid!")
 		return subcommands.ExitFailure
@@ -49,8 +52,8 @@ func (rc *RunCmd) Execute(_ context.Context, f *flag.FlagSet, _ ...interface{}) 
 
 	fmt.Printf("Selected message handler: %s\n\n", rc.handler)
 
-	fw := workers.FutureWorker{
-		Handler: func(msg *sqs.Message) *sqs.Message {
+	fw := &workers.FutureWorker{
+		Handler: func(ctx context.Context, msg *types.Message) *types.Message {
 			// convert sqs message to string
 			jsonMsg, err := json.Marshal(msg)
 			if err != nil {
@@ -59,7 +62,7 @@ func (rc *RunCmd) Execute(_ context.Context, f *flag.FlagSet, _ ...interface{}) 
 			strMsg := string(jsonMsg)
 
 			// pass the message to the handler and execute it
-			command := exec.Command(rc.handler, strMsg)
+			command := exec.CommandContext(ctx, rc.handler, strMsg)
 
 			// set var to get the output
 			var out bytes.Buffer
@@ -77,13 +80,17 @@ func (rc *RunCmd) Execute(_ context.Context, f *flag.FlagSet, _ ...interface{}) 
 		TimeOut: 5,
 	}
 
+	// Stop the loop gracefully on Ctrl+C / SIGTERM.
+	ctx, stop := signal.NotifyContext(ctx, os.Interrupt, syscall.SIGTERM)
+	defer stop()
+
 	sqsQueue := new(backend.SQSQueue).Init()
 
-	backend.IOLoop{
+	iol := &backend.IOLoop{
 		QueueWorker: sqsQueue,
 		Worker:      fw,
-		StopSignal:  false,
-	}.Run()
+	}
+	iol.Run(ctx)
 
 	return subcommands.ExitSuccess
 }

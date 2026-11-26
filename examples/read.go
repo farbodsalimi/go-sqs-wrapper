@@ -1,13 +1,14 @@
 package examples
 
 import (
+	"context"
 	"log"
 	"time"
 
 	"go-sqs-wrapper/pkg/backend"
 	"go-sqs-wrapper/pkg/workers"
 
-	"github.com/aws/aws-sdk-go/service/sqs"
+	"github.com/aws/aws-sdk-go-v2/service/sqs/types"
 )
 
 // Read an example of reading messages from sqs
@@ -20,27 +21,28 @@ func Read() {
 	//
 	// Creating a future worker
 	//
-	fw := workers.FutureWorker{
+	fw := &workers.FutureWorker{
 		Handler: handler,
 		TimeOut: 5,
 	}
 
 	//
-	// Interrupting the reading process
+	// Interrupting the reading process after 3 seconds.
 	//
-	time.AfterFunc(3*time.Second, fw.Stop)
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
 
 	//
 	// Starting an infinite io loop
 	//
-	backend.IOLoop{
+	iol := &backend.IOLoop{
 		QueueWorker: sqsQueue,
 		Worker:      fw,
-		StopSignal:  false,
-	}.Run()
+	}
+	iol.Run(ctx)
 }
 
-func handler(msg *sqs.Message) *sqs.Message {
+func handler(_ context.Context, msg *types.Message) *types.Message {
 	log.Println(msg)
 	return msg
 }
